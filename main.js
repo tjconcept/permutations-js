@@ -1,27 +1,20 @@
-var fact = function ( integer ) {
-	if (integer < 2)
-		return 1;
 
-	if (!arguments.callee.cache)
-		arguments.callee.cache = [];
+/* Permute will give all permutations for the provided array ( sourceSet )
+   do not provide usedSet nor permutationSet
+   Based on http://stackoverflow.com/a/9960925/7602
+*/
+function permute( sourceSet , usedSet , permutationsSet ) {
+  permutationsSet = permutationsSet || [];
+  usedSet = usedSet || [];
+  for (var i = 0; i < sourceSet.length; i++) {
+    usedSet.push( sourceSet.splice(i, 1)[0] );
+    if (!sourceSet.length) 
+      permutationsSet.push(usedSet.slice());
+    permute(sourceSet, usedSet , permutationsSet);
+    sourceSet.splice(i, 0, usedSet.pop());
+  }
+  return permutationsSet
+}
 
-	return arguments.callee.cache[integer-2] || (arguments.callee.cache[integer-2] = integer*arguments.callee(integer-1));
-};
-
-var printPermutations = function( string ) {
-
-	var length = string.length;
-	var count = fact(length);
-
-	for (var i=0;i<count;i++) {
-		var permutation = [];
-		var bucket = string.split('');
-		for (var u=0;u<length;u++)
-			permutation.push(bucket.splice(Math.floor(i/(fact(length)/fact(length-u)))%(length-u),1));
-		
-		console.log(permutation.join(''));
-	}
-
-};
-
-printPermutations('abc');
+//Test
+console.log( permute( "abc".split("") ) );
